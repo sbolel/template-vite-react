@@ -3,7 +3,7 @@
  * @module router/authLoader
  * @see {@link dashboard/Routes}
  */
-import { defer, redirect } from 'react-router-dom'
+import { redirect } from 'react-router-dom'
 import getJWT from '@/utils/getJWT'
 import { Routes } from '@/router/constants'
 
@@ -15,9 +15,9 @@ const authLoader = async (): Promise<unknown> => {
     throw redirect(Routes.AUTH_LOGIN)
   }
 
-  return defer({
+  return {
     jwtToken: jwtPromise,
-  })
+  }
 }
 
 export default authLoader
