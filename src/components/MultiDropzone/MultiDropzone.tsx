@@ -2,7 +2,7 @@
  * Component that via drag and drop or selection of files for upload.
  * @module components/MultiDropzone/MultiDropzone
  */
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useEffect, useMemo } from 'react'
 import { useDropzone, FileRejection } from 'react-dropzone'
 import { v4 as uuidv4 } from 'uuid'
 import { styled } from '@mui/material/styles'
@@ -153,15 +153,40 @@ const MultiDropZone: React.FC<MultiDropzoneProps> = ({
         message: file.error || '',
       }))
   })
-  const formattedAccept = getFormattedAcceptObject(accept)
-  const fileList = formatAcceptFileList(formattedAccept)
-  const maxSizePlaceholder =
-    maxSize && maxSize > 0
-      ? `${textOverrides?.sizeUpToText || 'up to'} ${formatBytes(maxSize)}`
-      : ''
-  const placeholder = `${textOverrides?.supportsTextShort || 'Supports'} ${
-    fileList || 'JSON'
-  } ${maxSizePlaceholder}`
+
+  useEffect(() => {
+    setErrors(
+      uploadedFiles
+        .filter((file) => file.error)
+        .map((file) => ({
+          id: file.id || uuidv4(),
+          message: file.error || '',
+        }))
+    )
+  }, [uploadedFiles])
+
+  const formattedAccept = useMemo(
+    () => getFormattedAcceptObject(accept),
+    [accept]
+  )
+  const fileList = useMemo(
+    () => formatAcceptFileList(formattedAccept),
+    [formattedAccept]
+  )
+  const maxSizePlaceholder = useMemo(
+    () =>
+      maxSize && maxSize > 0
+        ? `${textOverrides?.sizeUpToText || 'up to'} ${formatBytes(maxSize)}`
+        : '',
+    [maxSize, textOverrides]
+  )
+  const placeholder = useMemo(
+    () =>
+      `${textOverrides?.supportsTextShort || 'Supports'} ${
+        fileList || 'JSON'
+      } ${maxSizePlaceholder}`,
+    [textOverrides, fileList, maxSizePlaceholder]
+  )
   const isOverMaxFiles = maxFiles > 0 && uploadedFiles.length > maxFiles
 
   /**

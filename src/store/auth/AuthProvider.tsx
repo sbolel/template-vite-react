@@ -68,22 +68,11 @@ const AuthProvider: React.FC<AuthProviderProps> = ({
           type: AuthActions.LOGIN_SUCCESS,
           payload: { jwtToken },
         })
-
-        // if the unauthenticated user is trying to navigate to a
-        // protected app route, redirect them to the login page.
-        if (!matchProtectedRoute && location.pathname !== Routes.AUTH_LOGOUT) {
-          // navigate(Routes.DASHBOARD)
-        }
       } catch (error) {
         dispatch({
           type: AuthActions.LOGIN_FAILURE,
           error: error as Error,
         })
-        // if the unauthenticated user is trying to navigate to a
-        // protected app route, redirect them to the login page.
-        if (matchProtectedRoute) {
-          // navigate(Routes.AUTH_LOGIN)
-        }
       }
     }
 
