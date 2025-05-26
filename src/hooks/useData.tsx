@@ -21,7 +21,7 @@ const DataContext = React.createContext<{
 })
 
 type DataProviderProps = {
-  children: JSX.Element
+  children: React.ReactNode
   initialState?: DataState
 }
 
