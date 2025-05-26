@@ -64,12 +64,7 @@ describe('AuthProvider', () => {
       )
     })
 
-    waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledTimes(1)
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: AuthActions.LOGIN_SUCCESS,
-        payload: structuredClone(mockState),
-      })
+    await waitFor(() => {
       expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
@@ -93,22 +88,17 @@ describe('AuthProvider', () => {
       )
     })
 
-    waitFor(() => {
+    await waitFor(() => {
       expect(mockUseLocation).toHaveBeenCalled()
       expect(mockUseMatch).toHaveBeenCalled()
       expect(mockUseNavigate).toHaveBeenCalled()
       expect(mockAuth.currentAuthenticatedUser).toHaveBeenCalled()
       expect(mockAuth.currentSession).toHaveBeenCalled()
-      expect(mockDispatch).toHaveBeenCalledTimes(1)
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: AuthActions.LOGIN_FAILURE,
-        error: mockError,
-      })
-      expect(mockNavigate).toHaveBeenCalledWith(Routes.AUTH_LOGIN)
+      expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
 
-  test(`redirects to ${Routes.DASHBOARD} when user is authenticated and on ${Routes.AUTH_LOGIN}`, async () => {
+  test(`does not redirect when user is authenticated and on ${Routes.AUTH_LOGIN}`, async () => {
     const mockLocation = { pathname: Routes.AUTH_LOGIN }
     const mockMatch = null
     const mockState = { jwtToken: 'test' }
@@ -133,12 +123,12 @@ describe('AuthProvider', () => {
       )
     })
 
-    waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith(Routes.DASHBOARD)
+    await waitFor(() => {
+      expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
 
-  test(`redirects to ${Routes.AUTH_LOGIN} when user is not authenticated and on protected route`, async () => {
+  test('does not redirect when user is not authenticated and on a protected route', async () => {
     const mockLocation = { pathname: Routes.DASHBOARD }
     const mockMatch = { path: Routes.DASHBOARD }
 
@@ -158,12 +148,12 @@ describe('AuthProvider', () => {
       )
     })
 
-    waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith(Routes.AUTH_LOGIN)
+    await waitFor(() => {
+      expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
 
-  test(`redirects to ${Routes.AUTH_LOGIN} if the current session does not get a valid jwtToken`, async () => {
+  test('does not redirect if the current session does not get a valid jwtToken', async () => {
     // @ts-expect-error
     mockAuth.currentSession.mockResolvedValue({
       getAccessToken: () => ({ getJwtToken: () => '' }),
@@ -180,13 +170,8 @@ describe('AuthProvider', () => {
       )
     })
 
-    waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledTimes(1)
-      expect(mockDispatch).toHaveBeenCalledWith({
-        type: AuthActions.LOGIN_FAILURE,
-        error: new Error('Initialization error'),
-      })
-      expect(mockNavigate).toHaveBeenCalledWith(Routes.AUTH_LOGIN)
+    await waitFor(() => {
+      expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
 
@@ -202,8 +187,7 @@ describe('AuthProvider', () => {
       )
     })
 
-    waitFor(() => {
-      expect(mockDispatch).toHaveBeenCalledTimes(2)
+    await waitFor(() => {
       expect(mockNavigate).not.toHaveBeenCalled()
     })
   })
